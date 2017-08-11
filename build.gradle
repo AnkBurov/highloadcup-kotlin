@@ -1,0 +1,18 @@
+group 'ru'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.6.RELEASE")
+
+    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.20.0'
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.5.6.RELEASE'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
