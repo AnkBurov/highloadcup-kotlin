@@ -1,6 +1,7 @@
 package ru.highloadcup.dao;
 
 import org.jooq.DSLContext;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,10 @@ import ru.highloadcup.generated.tables.records.UserRecord;
 
 import javax.transaction.Transactional;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static ru.highloadcup.generated.Tables.USER;
 
@@ -29,6 +34,21 @@ public class UserDao {
                 .set(USER.GENDER, user.getGender().name())
                 .set(USER.BIRTH_DATE, user.getBirthDate())
                 .execute();
+    }
+
+    @Transactional
+    public void createUsers(Collection<User> users) {
+        List<Query> queries = new ArrayList<>();
+        for (User user : users) {
+            queries.add(dsl.insertInto(USER)
+                    .set(USER.ID, user.getId())
+                    .set(USER.EMAIL, user.getEmail())
+                    .set(USER.FIRST_NAME, user.getFirstName())
+                    .set(USER.LAST_NAME, user.getLastName())
+                    .set(USER.GENDER, user.getGender().name())
+                    .set(USER.BIRTH_DATE, user.getBirthDate()));
+        }
+        dsl.batch(queries).execute();
     }
 
     @Transactional

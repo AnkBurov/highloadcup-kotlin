@@ -2,6 +2,7 @@ package ru.highloadcup.dao;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import ru.highloadcup.generated.tables.records.VisitRecord;
 import javax.transaction.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static ru.highloadcup.generated.Tables.LOCATION;
@@ -32,6 +35,20 @@ public class VisitDao {
                 .set(VISIT.VISITED_AT, visit.getVisitedAt())
                 .set(VISIT.MARK, visit.getMark())
                 .execute();
+    }
+
+    @Transactional
+    public void createVisits(Collection<Visit> visits) {
+        List<Query> queries = new ArrayList<>();
+        for (Visit visit : visits) {
+            queries.add(dsl.insertInto(VISIT)
+                    .set(VISIT.ID, visit.getId())
+                    .set(VISIT.LOCATION_ID, visit.getLocationId())
+                    .set(VISIT.USER_ID, visit.getUserId())
+                    .set(VISIT.VISITED_AT, visit.getVisitedAt())
+                    .set(VISIT.MARK, visit.getMark()));
+        }
+        dsl.batch(queries).execute();
     }
 
     @Transactional

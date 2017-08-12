@@ -2,6 +2,7 @@ package ru.highloadcup.dao;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
 import org.jooq.impl.DSL;
@@ -15,7 +16,10 @@ import javax.transaction.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import static ru.highloadcup.generated.Tables.LOCATION;
 import static ru.highloadcup.generated.Tables.USER;
@@ -36,6 +40,20 @@ public class LocationDao {
                 .set(LOCATION.CITY, location.getCity())
                 .set(LOCATION.DISTANCE, location.getDistance())
                 .execute();
+    }
+
+    @Transactional
+    public void createLocations(Collection<Location> locations) {
+        List<Query> queries = new ArrayList<>();
+        for (Location location : locations) {
+            queries.add(dsl.insertInto(LOCATION)
+                    .set(LOCATION.ID, location.getId())
+                    .set(LOCATION.PLACE, location.getPlace())
+                    .set(LOCATION.COUNTRY, location.getCountry())
+                    .set(LOCATION.CITY, location.getCity())
+                    .set(LOCATION.DISTANCE, location.getDistance()));
+        }
+        dsl.batch(queries).execute();
     }
 
     @Transactional

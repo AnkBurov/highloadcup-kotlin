@@ -17,6 +17,8 @@ import ru.highloadcup.api.User;
 import ru.highloadcup.dao.LocationDao;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 
 import static ru.highloadcup.controller.LocationController.REST_PATH;
@@ -75,7 +77,8 @@ public class LocationController {
         if (averageVisitMark == null) {
             averageVisitMark = BigDecimal.ZERO;
         }
-        return new ResponseEntity<>(new AverageVisitMarkDto(averageVisitMark), JSON_HEADERS, HttpStatus.OK);
+        BigDecimal rounded = averageVisitMark.round(new MathContext(6, RoundingMode.HALF_EVEN));
+        return new ResponseEntity<>(new AverageVisitMarkDto(rounded), JSON_HEADERS, HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)

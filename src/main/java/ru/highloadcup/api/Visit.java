@@ -15,7 +15,7 @@ public class Visit implements Serializable {
     @JsonProperty("user")
     private int userId;
 
-    @JsonProperty("visitedAt")
+    @JsonProperty("visited_at")
     private Timestamp visitedAt;
 
     private Integer mark;
