@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Location implements Serializable {
 
-    private int id;
+    private Integer id;
 
     private String place;
 
@@ -12,13 +12,13 @@ public class Location implements Serializable {
 
     private String city;
 
-    private int distance;
+    private Integer distance;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -46,11 +46,35 @@ public class Location implements Serializable {
         this.city = city;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(Integer distance) {
         this.distance = distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Location location = (Location) o;
+
+        if (id != null ? !id.equals(location.id) : location.id != null) return false;
+        if (place != null ? !place.equals(location.place) : location.place != null) return false;
+        if (country != null ? !country.equals(location.country) : location.country != null) return false;
+        if (city != null ? !city.equals(location.city) : location.city != null) return false;
+        return distance != null ? distance.equals(location.distance) : location.distance == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (place != null ? place.hashCode() : 0);
+        result = 31 * result + (country != null ? country.hashCode() : 0);
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (distance != null ? distance.hashCode() : 0);
+        return result;
     }
 }

@@ -18,7 +18,7 @@ public class Visit implements Serializable {
     @JsonProperty("visitedAt")
     private Timestamp visitedAt;
 
-    private Byte mark;
+    private Integer mark;
 
     public int getId() {
         return id;
@@ -52,11 +52,35 @@ public class Visit implements Serializable {
         this.visitedAt = visitedAt;
     }
 
-    public Byte getMark() {
+    public Integer getMark() {
         return mark;
     }
 
-    public void setMark(Byte mark) {
+    public void setMark(Integer mark) {
         this.mark = mark;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Visit visit = (Visit) o;
+
+        if (id != visit.id) return false;
+        if (locationId != visit.locationId) return false;
+        if (userId != visit.userId) return false;
+        if (visitedAt != null ? !visitedAt.equals(visit.visitedAt) : visit.visitedAt != null) return false;
+        return mark != null ? mark.equals(visit.mark) : visit.mark == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + locationId;
+        result = 31 * result + userId;
+        result = 31 * result + (visitedAt != null ? visitedAt.hashCode() : 0);
+        result = 31 * result + (mark != null ? mark.hashCode() : 0);
+        return result;
     }
 }

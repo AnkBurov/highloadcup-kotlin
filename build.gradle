@@ -1,3 +1,7 @@
+plugins {
+    id 'nu.studer.jooq' version '2.0.7'
+}
+
 group 'ru'
 version '1.0-SNAPSHOT'
 
@@ -5,14 +9,46 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.8
 
+jooq {
+    db(sourceSets.main) {
+        jdbc {
+            driver = 'org.sqlite.JDBC'
+            url = 'jdbc:sqlite:db'
+            user = ''
+            password = ''
+        }
+        generator {
+            name = 'org.jooq.util.DefaultGenerator'
+            strategy {
+                name = 'org.jooq.util.DefaultGeneratorStrategy'
+            }
+            database {
+            }
+            generate {
+            }
+            target {
+                packageName = 'ru.highloadcup.generated'
+                directory = 'src/main/java'
+            }
+        }
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:1.5.6.RELEASE")
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '1.5.6.RELEASE'
+
+    compile group: 'org.jooq', name: 'jooq', version: '3.9.5'
+    compile group: 'org.jooq', name: 'jooq-meta', version: '3.9.5'
+    compile group: 'org.jooq', name: 'jooq-codegen', version: '3.9.5'
 
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.20.0'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.5.6.RELEASE'
     testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    jooqRuntime group: 'org.xerial', name: 'sqlite-jdbc', version: '3.20.0'
 }
