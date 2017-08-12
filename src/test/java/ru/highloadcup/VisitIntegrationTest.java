@@ -68,7 +68,7 @@ public class VisitIntegrationTest {
 
     @Test
     public void getVisit() throws Exception {
-        User user = UserIntegrationTest.createUserInternal(restTemplate, 1000002, "1238@gmail.com");
+        User user = UserIntegrationTest.createUserInternal(restTemplate, 1000002, "1239@gmail.com");
         Location location = LocationIntegrationTest.createLocationInternal(restTemplate, 1000002);
         Visit visit = createVisitInternal(restTemplate, 1000002, user.getId(), location.getId());
 

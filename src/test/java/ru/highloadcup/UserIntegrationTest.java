@@ -9,11 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.highloadcup.api.EmptyJson;
+import ru.highloadcup.api.Location;
 import ru.highloadcup.api.User;
 import ru.highloadcup.api.UsersDto;
+import ru.highloadcup.api.Visit;
+import ru.highloadcup.api.VisitsDto;
+import ru.highloadcup.controller.VisitController;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -84,5 +90,20 @@ public class UserIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(user, response.getBody());
+    }
+
+    @Test
+    public void getVisits() throws Exception {
+        User user = UserIntegrationTest.createUserInternal(restTemplate, 1000003, "1238@gmail.com");
+        Location location = LocationIntegrationTest.createLocationInternal(restTemplate, 1000003);
+        Visit visit = VisitIntegrationTest.createVisitInternal(restTemplate, 1000003, user.getId(), location.getId());
+
+        Map<String, Object> urlVariables = new HashMap<>();
+        urlVariables.put("id", user.getId());
+        ResponseEntity<VisitsDto> response = restTemplate.getForEntity(
+                REST_PATH + BY_ID + VisitController.REST_PATH + "/?country=" + location.getCountry(),
+                VisitsDto.class, urlVariables);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 }

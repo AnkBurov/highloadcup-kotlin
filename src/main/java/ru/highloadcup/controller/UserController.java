@@ -8,13 +8,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.highloadcup.api.EmptyJson;
 import ru.highloadcup.api.User;
 import ru.highloadcup.api.UsersDto;
+import ru.highloadcup.api.Visit;
+import ru.highloadcup.api.VisitsDto;
 import ru.highloadcup.dao.UserDao;
+import ru.highloadcup.dao.VisitDao;
 
+import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.List;
 
 import static ru.highloadcup.controller.UserController.REST_PATH;
 import static ru.highloadcup.util.HttpUtil.BY_ID;
@@ -31,6 +37,9 @@ public class UserController {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private VisitDao visitDao;
 
     @RequestMapping(method = RequestMethod.GET)
     public UsersDto getUsers() {
@@ -61,6 +70,20 @@ public class UserController {
             return NOT_FOUND;
         }
         return new ResponseEntity<>(user, JSON_HEADERS, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = BY_ID + VisitController.REST_PATH, method = RequestMethod.GET)
+    public ResponseEntity<VisitsDto> getVisits(@PathVariable Integer id,
+                                               @RequestParam(required = false) Timestamp fromDate,
+                                               @RequestParam(required = false) Timestamp toDate,
+                                               @RequestParam(required = false) String country,
+                                               @RequestParam(required = false) Integer toDistance) {
+        User user = userDao.getUser(id);
+        if (user == null) {
+            return NOT_FOUND;
+        }
+        List<Visit> visits = visitDao.getVisits(id, fromDate, toDate, country, toDistance);
+        return new ResponseEntity<>(new VisitsDto(visits), JSON_HEADERS, HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)

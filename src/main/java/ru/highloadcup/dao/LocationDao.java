@@ -1,16 +1,25 @@
 package ru.highloadcup.dao;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
+import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.highloadcup.api.Location;
+import ru.highloadcup.api.User;
 import ru.highloadcup.generated.tables.records.LocationRecord;
 
 import javax.transaction.Transactional;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Date;
+
 import static ru.highloadcup.generated.Tables.LOCATION;
+import static ru.highloadcup.generated.Tables.USER;
+import static ru.highloadcup.generated.Tables.VISIT;
 
 @Component
 public class LocationDao {
@@ -59,6 +68,41 @@ public class LocationDao {
                 .from(LOCATION)
                 .where(LOCATION.ID.equal(locationId))
                 .fetchOne(LocationMapper.INSTANCE);
+    }
+
+    public BigDecimal getAverageVisitMark(Integer locationId, Timestamp fromDate, Timestamp toDate,
+                                          Integer fromAge, Integer toAge, User.Gender gender) {
+        Timestamp currentStamp = new Timestamp(new Date().getTime());
+        Condition condition = VISIT.LOCATION_ID.equal(locationId);
+        if (fromDate != null) {
+            condition = condition.and(VISIT.VISITED_AT.greaterThan(fromDate));
+        }
+        if (toDate != null) {
+            condition = condition.and(VISIT.VISITED_AT.lessThan(toDate));
+        }
+        if (gender != null) {
+            condition = condition.and(USER.GENDER.equal(gender.name()));
+        }
+
+        Condition joinCondition = DSL.trueCondition();
+        if (fromAge != null) {
+            joinCondition = joinCondition.and(
+                    "(SELECT strftime('%s','" + currentStamp.getSeconds() + "') - strftime('%s',USER.BIRTH_DATE)) > " + fromAge * 31536000);
+        }
+        if (toAge != null) {
+            joinCondition = joinCondition.and(
+                    "(SELECT strftime('%s','" + currentStamp.getSeconds() + "') - strftime('%s',USER.BIRTH_DATE)) < " + toAge * 31536000);
+        }
+
+        return getAverageVisitMark(condition, joinCondition);
+    }
+
+    private BigDecimal getAverageVisitMark(Condition condition, Condition joinCondition) {
+        return dsl.select(DSL.avg(VISIT.MARK))
+                .from(VISIT)
+                .join(USER).on(VISIT.USER_ID.equal(USER.ID).and(joinCondition))
+                .where(condition)
+                .fetchOneInto(BigDecimal.class);
     }
 
     private static class LocationMapper implements RecordMapper<Record, Location> {

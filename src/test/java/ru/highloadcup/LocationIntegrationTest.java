@@ -8,11 +8,18 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.highloadcup.api.AverageVisitMarkDto;
 import ru.highloadcup.api.EmptyJson;
 import ru.highloadcup.api.Location;
+import ru.highloadcup.api.User;
+import ru.highloadcup.api.Visit;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static ru.highloadcup.controller.LocationController.AVG;
 import static ru.highloadcup.controller.LocationController.REST_PATH;
 import static ru.highloadcup.util.HttpUtil.BY_ID;
 import static ru.highloadcup.util.HttpUtil.NEW;
@@ -66,5 +73,20 @@ public class LocationIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(location, response.getBody());
+    }
+
+    @Test
+    public void getAverageVisitMark() throws Exception {
+        User user = UserIntegrationTest.createUserInternal(restTemplate, 600003, "12399@gmail.com");
+        Location location = LocationIntegrationTest.createLocationInternal(restTemplate, 600003);
+        Visit visit = VisitIntegrationTest.createVisitInternal(restTemplate, 600003, user.getId(), location.getId());
+
+        Map<String, Object> urlVariables = new HashMap<>();
+        urlVariables.put("id", user.getId());
+
+        ResponseEntity<AverageVisitMarkDto> response = restTemplate.getForEntity(
+                REST_PATH + BY_ID + AVG + "?toAge=70", AverageVisitMarkDto.class, urlVariables);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 }
