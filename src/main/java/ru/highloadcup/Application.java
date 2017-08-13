@@ -4,17 +4,20 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import ru.highloadcup.parser.DataParser;
+import ru.highloadcup.warmer.Warmer;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 
-@SpringBootApplication(scanBasePackages = {"ru.highloadcup.controller", "ru.highloadcup.dao"})
+@SpringBootApplication(scanBasePackages = {"ru.highloadcup.controller", "ru.highloadcup.dao", "ru.highloadcup.warmer"})
 public class Application implements InitializingBean {
 
     @Bean
@@ -26,6 +29,9 @@ public class Application implements InitializingBean {
     public DSLContext dsl(DataSource dataSource) {
         return new DefaultDSLContext(dataSource, SQLDialect.SQLITE);
     }
+
+    @Autowired
+    private Warmer warmer;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -43,6 +49,14 @@ public class Application implements InitializingBean {
             try {
                 dataParser().parse(Paths.get(finalDataFile));
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        taskExecutor.execute(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(5L);
+                warmer.warmControllers();
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
