@@ -81,10 +81,10 @@ public class VisitDao {
     public List<UserVisit> getUserVisits(Integer userId, String fromDate, String toDate, String country, String toDistance) {
         Condition condition = VISIT.USER_ID.equal(userId);
         if (fromDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.greaterThan(new Timestamp(Integer.valueOf(fromDate))));
+            condition = condition.and(VISIT.VISITED_AT.greaterThan(new Timestamp(Long.valueOf(fromDate))));
         }
         if (toDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.lessThan(new Timestamp(Integer.valueOf(toDate))));
+            condition = condition.and(VISIT.VISITED_AT.lessThan(new Timestamp(Long.valueOf(toDate))));
         }
         if (country != null) {
             condition = condition.and(LOCATION.COUNTRY.equal(country));

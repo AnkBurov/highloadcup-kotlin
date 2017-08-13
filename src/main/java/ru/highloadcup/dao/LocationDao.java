@@ -91,10 +91,10 @@ public class LocationDao {
                                           String fromAge, String toAge, String gender) {
         Condition condition = VISIT.LOCATION_ID.equal(locationId);
         if (fromDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.greaterThan(new Timestamp(Integer.valueOf(fromDate))));
+            condition = condition.and(VISIT.VISITED_AT.greaterThan(new Timestamp(Long.valueOf(fromDate))));
         }
         if (toDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.lessThan(new Timestamp(Integer.valueOf(toDate))));
+            condition = condition.and(VISIT.VISITED_AT.lessThan(new Timestamp(Long.valueOf(toDate))));
         }
         if (gender != null) {
             condition = condition.and(USER.GENDER.equal(User.Gender.valueOf(gender).name()));
@@ -102,12 +102,12 @@ public class LocationDao {
 
         Condition joinCondition = DSL.trueCondition();
         if (fromAge != null) {
-            Integer seconds = Integer.valueOf(fromAge) * 31557600;
+            Long seconds = Long.valueOf(fromAge) * 31557600;
             joinCondition = joinCondition.and(
                     "(SELECT strftime('%s','now') - strftime('%s',USER.BIRTH_DATE)) > " + seconds);
         }
         if (toAge != null) {
-            Integer seconds = Integer.valueOf(toAge) * 31557600;
+            Long seconds = Long.valueOf(toAge) * 31557600;
             joinCondition = joinCondition.and(
                     "(SELECT strftime('%s','now') - strftime('%s',USER.BIRTH_DATE)) < " + seconds);
         }
