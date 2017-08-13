@@ -7,6 +7,7 @@ import org.jooq.Record;
 import org.jooq.RecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.highloadcup.api.UserVisit;
 import ru.highloadcup.api.Visit;
 import ru.highloadcup.generated.tables.records.VisitRecord;
 
@@ -77,34 +78,32 @@ public class VisitDao {
                 .fetchOne(VisitMapper.INSTANCE);
     }
 
-    public List<Visit> getVisits(Integer userId, Timestamp fromDate, Timestamp toDate, String country, Integer toDistance) {
+    public List<UserVisit> getUserVisits(Integer userId, String fromDate, String toDate, String country, String toDistance) {
         Condition condition = VISIT.USER_ID.equal(userId);
         if (fromDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.greaterThan(fromDate));
+            condition = condition.and(VISIT.VISITED_AT.greaterThan(new Timestamp(Integer.valueOf(fromDate))));
         }
         if (toDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.lessThan(toDate));
+            condition = condition.and(VISIT.VISITED_AT.lessThan(new Timestamp(Integer.valueOf(toDate))));
         }
         if (country != null) {
             condition = condition.and(LOCATION.COUNTRY.equal(country));
         }
         if (toDistance != null) {
-            condition = condition.and(LOCATION.DISTANCE.lessThan(toDistance));
+            condition = condition.and(LOCATION.DISTANCE.lessThan(Integer.valueOf(toDistance)));
         }
-        return getVisits(condition);
+        return getUserVisits(condition);
     }
 
-    private List<Visit> getVisits(Condition condition) {
-        return dsl.select(VISIT.ID,
-                VISIT.LOCATION_ID,
-                VISIT.USER_ID,
+    private List<UserVisit> getUserVisits(Condition condition) {
+        return dsl.select(VISIT.MARK,
                 VISIT.VISITED_AT,
-                VISIT.MARK)
+                LOCATION.PLACE)
                 .from(VISIT)
                 .join(LOCATION).on(VISIT.LOCATION_ID.equal(LOCATION.ID))
                 .where(condition)
                 .orderBy(VISIT.VISITED_AT.asc())
-                .fetch(VisitMapper.INSTANCE);
+                .fetch(UserVisitMapper.INSTANCE);
     }
 
     private static class VisitMapper implements RecordMapper<Record, Visit> {
@@ -123,4 +122,17 @@ public class VisitDao {
         }
     }
 
+    private static class UserVisitMapper implements RecordMapper<Record, UserVisit> {
+
+        private static final UserVisitMapper INSTANCE = new UserVisitMapper();
+
+        @Override
+        public UserVisit map(Record record) {
+            UserVisit userVisit = new UserVisit();
+            userVisit.setMark(record.getValue(VISIT.MARK));
+            userVisit.setVisitedAt(record.getValue(VISIT.VISITED_AT));
+            userVisit.setPlace(record.getValue(LOCATION.PLACE));
+            return userVisit;
+        }
+    }
 }

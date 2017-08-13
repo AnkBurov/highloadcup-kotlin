@@ -2,7 +2,6 @@ package ru.highloadcup.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,23 +9,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.highloadcup.api.AverageVisitMarkDto;
 import ru.highloadcup.api.EmptyJson;
 import ru.highloadcup.api.Location;
-import ru.highloadcup.api.User;
 import ru.highloadcup.dao.LocationDao;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.sql.Timestamp;
 
 import static ru.highloadcup.controller.LocationController.REST_PATH;
 import static ru.highloadcup.util.HttpUtil.BY_ID;
-import static ru.highloadcup.util.HttpUtil.JSON_HEADERS;
 import static ru.highloadcup.util.HttpUtil.NEW;
-import static ru.highloadcup.util.HttpUtil.NOT_FOUND;
-import static ru.highloadcup.util.HttpUtil.OK;
+import static ru.highloadcup.util.HttpUtil.createResponse;
 
 @RestController
 @RequestMapping(REST_PATH)
@@ -39,50 +37,54 @@ public class LocationController {
     private LocationDao locationDao;
 
     @RequestMapping(value = NEW, method = RequestMethod.POST)
-    public ResponseEntity<EmptyJson> createLocation(@RequestBody Location location) {
+    public void createLocation(@RequestBody Location location, HttpServletResponse response) throws IOException {
         locationDao.createLocation(location);
-        return OK;
+        createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.POST)
-    public ResponseEntity<EmptyJson> updateLocation(@PathVariable Integer id, @RequestBody Location location) {
+    public void updateLocation(@PathVariable Integer id, @RequestBody Location location, HttpServletResponse response) throws IOException {
         int numberOfUpdatedRecords = locationDao.updateLocation(id, location);
         if (numberOfUpdatedRecords == 0) {
-            return NOT_FOUND;
+            createResponse(HttpStatus.NOT_FOUND, response);
         }
-        return OK;
+        createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.GET)
-    public ResponseEntity<Location> getLocation(@PathVariable Integer id) {
+    public void getLocation(@PathVariable Integer id, HttpServletResponse response) throws IOException {
         Location location = locationDao.getLocation(id);
         if (location == null) {
-            return NOT_FOUND;
+            createResponse(HttpStatus.NOT_FOUND, response);
         }
-        return new ResponseEntity<>(location, JSON_HEADERS, HttpStatus.OK);
+        createResponse(location, HttpStatus.OK, response);
     }
 
     @RequestMapping(value = BY_ID + AVG, method = RequestMethod.GET)
-    public ResponseEntity<AverageVisitMarkDto> getAverageVisitMark(@PathVariable Integer id,
-                                                                   @RequestParam(required = false) Timestamp fromDate,
-                                                                   @RequestParam(required = false) Timestamp toDate,
-                                                                   @RequestParam(required = false) Integer fromAge,
-                                                                   @RequestParam(required = false) Integer toAge,
-                                                                   @RequestParam(required = false) User.Gender gender) {
+    public void getAverageVisitMark(@PathVariable Integer id,
+                                    HttpServletResponse response,
+                                    @RequestParam(required = false) String fromDate,
+                                    @RequestParam(required = false) String toDate,
+                                    @RequestParam(required = false) String fromAge,
+                                    @RequestParam(required = false) String toAge,
+                                    @RequestParam(required = false) String gender) throws IOException {
         Location location = locationDao.getLocation(id);
         if (location == null) {
-            return NOT_FOUND;
+            createResponse(HttpStatus.NOT_FOUND, response);
         }
         BigDecimal averageVisitMark = locationDao.getAverageVisitMark(id, fromDate, toDate, fromAge, toAge, gender);
         if (averageVisitMark == null) {
             averageVisitMark = BigDecimal.ZERO;
         }
         BigDecimal rounded = averageVisitMark.round(new MathContext(6, RoundingMode.HALF_EVEN));
-        return new ResponseEntity<>(new AverageVisitMarkDto(rounded), JSON_HEADERS, HttpStatus.OK);
+        createResponse(new AverageVisitMarkDto(rounded), HttpStatus.OK, response);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity handleAllExceptions(Exception e) {
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    public void handleAllExceptions(Exception e, HttpServletResponse response) throws IOException {
+        if (e instanceof MethodArgumentTypeMismatchException) {
+            createResponse(HttpStatus.NOT_FOUND, response);
+        }
+        createResponse(HttpStatus.BAD_REQUEST, response);
     }
 }

@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import static ru.highloadcup.generated.Tables.LOCATION;
@@ -88,28 +87,29 @@ public class LocationDao {
                 .fetchOne(LocationMapper.INSTANCE);
     }
 
-    public BigDecimal getAverageVisitMark(Integer locationId, Timestamp fromDate, Timestamp toDate,
-                                          Integer fromAge, Integer toAge, User.Gender gender) {
-        Timestamp currentStamp = new Timestamp(new Date().getTime());
+    public BigDecimal getAverageVisitMark(Integer locationId, String fromDate, String toDate,
+                                          String fromAge, String toAge, String gender) {
         Condition condition = VISIT.LOCATION_ID.equal(locationId);
         if (fromDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.greaterThan(fromDate));
+            condition = condition.and(VISIT.VISITED_AT.greaterThan(new Timestamp(Integer.valueOf(fromDate))));
         }
         if (toDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.lessThan(toDate));
+            condition = condition.and(VISIT.VISITED_AT.lessThan(new Timestamp(Integer.valueOf(toDate))));
         }
         if (gender != null) {
-            condition = condition.and(USER.GENDER.equal(gender.name()));
+            condition = condition.and(USER.GENDER.equal(User.Gender.valueOf(gender).name()));
         }
 
         Condition joinCondition = DSL.trueCondition();
         if (fromAge != null) {
+            Integer seconds = Integer.valueOf(fromAge) * 31557600;
             joinCondition = joinCondition.and(
-                    "(SELECT strftime('%s','" + currentStamp.getSeconds() + "') - strftime('%s',USER.BIRTH_DATE)) > " + fromAge * 31536000);
+                    "(SELECT strftime('%s','now') - strftime('%s',USER.BIRTH_DATE)) > " + seconds);
         }
         if (toAge != null) {
+            Integer seconds = Integer.valueOf(toAge) * 31557600;
             joinCondition = joinCondition.and(
-                    "(SELECT strftime('%s','" + currentStamp.getSeconds() + "') - strftime('%s',USER.BIRTH_DATE)) < " + toAge * 31536000);
+                    "(SELECT strftime('%s','now') - strftime('%s',USER.BIRTH_DATE)) < " + seconds);
         }
 
         return getAverageVisitMark(condition, joinCondition);

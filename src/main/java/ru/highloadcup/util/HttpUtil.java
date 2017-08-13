@@ -1,23 +1,46 @@
 package ru.highloadcup.util;
 
-import org.springframework.http.HttpHeaders;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import ru.highloadcup.api.EmptyJson;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Serializable;
 
 public class HttpUtil {
 
     public static final String BY_ID = "/{id}";
     public static final String NEW = "/new";
+    private static final String UTF8 = "UTF-8";
+    private static final String CONTENT_TYPE = "application/json;charset=" + UTF8;
+    private static final byte[] EMPTY_BYTES = new byte[0];
 
-    public static final HttpHeaders JSON_HEADERS = new HttpHeaders();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {
-        JSON_HEADERS.add("Content-Type", "application/json");
+        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
-    public static final ResponseEntity NOT_FOUND = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    public static final ResponseEntity BAD_REQUEST = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    public static final ResponseEntity OK = new ResponseEntity<>(EmptyJson.INSTANCE, JSON_HEADERS, HttpStatus.OK);
+    public static void createResponse(HttpStatus httpStatus, HttpServletResponse response) throws IOException {
+        response.setContentLength(0);
+        response.setStatus(httpStatus.value());
+        try (ServletOutputStream outputStream = response.getOutputStream()) {
+            outputStream.write(EMPTY_BYTES);
+            outputStream.flush();
+        }
+    }
 
+    public static <T extends Serializable> void createResponse(T object, HttpStatus httpStatus, HttpServletResponse response) throws IOException {
+        byte[] bytes = MAPPER.writeValueAsBytes(object);
+        response.setContentLength(bytes.length);
+        response.setCharacterEncoding(UTF8);
+        response.setContentType(CONTENT_TYPE);
+        response.setStatus(httpStatus.value());
+        try (ServletOutputStream outputStream = response.getOutputStream()) {
+            outputStream.write(bytes);
+            outputStream.flush();
+        }
+    }
 }
