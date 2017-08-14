@@ -64,6 +64,12 @@ public class VisitDao {
         if (visit.getMark() != null) {
             visitRecord.setMark(visit.getMark());
         }
+        if (visit.getLocationId() != null) {
+            visitRecord.setLocationId(visit.getLocationId());
+        }
+        if (visit.getUserId() != null) {
+            visitRecord.setUserId(visit.getUserId());
+        }
         return visitRecord.store();
     }
 

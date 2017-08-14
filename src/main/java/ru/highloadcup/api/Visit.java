@@ -7,40 +7,40 @@ import java.sql.Timestamp;
 
 public class Visit implements Serializable {
 
-    private int id;
+    private Integer id;
 
     @JsonProperty("location")
-    private int locationId;
+    private Integer locationId;
 
     @JsonProperty("user")
-    private int userId;
+    private Integer userId;
 
     @JsonProperty("visited_at")
     private Timestamp visitedAt;
 
     private Integer mark;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getLocationId() {
+    public Integer getLocationId() {
         return locationId;
     }
 
-    public void setLocationId(int locationId) {
+    public void setLocationId(Integer locationId) {
         this.locationId = locationId;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -67,18 +67,18 @@ public class Visit implements Serializable {
 
         Visit visit = (Visit) o;
 
-        if (id != visit.id) return false;
-        if (locationId != visit.locationId) return false;
-        if (userId != visit.userId) return false;
+        if (id != null ? !id.equals(visit.id) : visit.id != null) return false;
+        if (locationId != null ? !locationId.equals(visit.locationId) : visit.locationId != null) return false;
+        if (userId != null ? !userId.equals(visit.userId) : visit.userId != null) return false;
         if (visitedAt != null ? !visitedAt.equals(visit.visitedAt) : visit.visitedAt != null) return false;
         return mark != null ? mark.equals(visit.mark) : visit.mark == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + locationId;
-        result = 31 * result + userId;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (locationId != null ? locationId.hashCode() : 0);
+        result = 31 * result + (userId != null ? userId.hashCode() : 0);
         result = 31 * result + (visitedAt != null ? visitedAt.hashCode() : 0);
         result = 31 * result + (mark != null ? mark.hashCode() : 0);
         return result;
