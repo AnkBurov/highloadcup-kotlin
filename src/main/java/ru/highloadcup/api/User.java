@@ -3,7 +3,6 @@ package ru.highloadcup.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 public class User implements Serializable {
     //todo проверка в коде на длину символов
@@ -25,7 +24,7 @@ public class User implements Serializable {
     private Gender gender;
 
     @JsonProperty("birth_date")
-    private Timestamp birthDate;
+    private Long birthDate;
 
     public Integer getId() {
         return id;
@@ -67,11 +66,11 @@ public class User implements Serializable {
         this.gender = gender;
     }
 
-    public Timestamp getBirthDate() {
+    public Long getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(Timestamp birthDate) {
+    public void setBirthDate(Long birthDate) {
         this.birthDate = birthDate;
     }
 

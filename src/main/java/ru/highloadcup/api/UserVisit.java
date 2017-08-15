@@ -3,14 +3,13 @@ package ru.highloadcup.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 public class UserVisit implements Serializable {
 
     private Integer mark;
 
     @JsonProperty("visited_at")
-    private Timestamp visitedAt;
+    private Long visitedAt;
 
     private String place;
 
@@ -22,11 +21,11 @@ public class UserVisit implements Serializable {
         this.mark = mark;
     }
 
-    public Timestamp getVisitedAt() {
+    public Long getVisitedAt() {
         return visitedAt;
     }
 
-    public void setVisitedAt(Timestamp visitedAt) {
+    public void setVisitedAt(Long visitedAt) {
         this.visitedAt = visitedAt;
     }
 

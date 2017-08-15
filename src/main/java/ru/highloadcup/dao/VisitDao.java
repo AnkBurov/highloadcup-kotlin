@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
+import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.highloadcup.api.UserVisit;
@@ -33,7 +34,7 @@ public class VisitDao {
                 .set(VISIT.ID, visit.getId())
                 .set(VISIT.LOCATION_ID, visit.getLocationId())
                 .set(VISIT.USER_ID, visit.getUserId())
-                .set(VISIT.VISITED_AT, visit.getVisitedAt())
+                .set(DSL.field("VISITED_AT", Long.class), visit.getVisitedAt())
                 .set(VISIT.MARK, visit.getMark())
                 .execute();
     }
@@ -46,7 +47,7 @@ public class VisitDao {
                     .set(VISIT.ID, visit.getId())
                     .set(VISIT.LOCATION_ID, visit.getLocationId())
                     .set(VISIT.USER_ID, visit.getUserId())
-                    .set(VISIT.VISITED_AT, visit.getVisitedAt())
+                    .set(DSL.field("VISITED_AT", Long.class), visit.getVisitedAt())
                     .set(VISIT.MARK, visit.getMark()));
         }
         dsl.batch(queries).execute();
@@ -59,7 +60,7 @@ public class VisitDao {
             return 0;
         }
         if (visit.getVisitedAt() != null) {
-            visitRecord.setVisitedAt(visit.getVisitedAt());
+            visitRecord.set(DSL.field("VISITED_AT", Long.class), visit.getVisitedAt());
         }
         if (visit.getMark() != null) {
             visitRecord.setMark(visit.getMark());
@@ -87,10 +88,10 @@ public class VisitDao {
     public List<UserVisit> getUserVisits(Integer userId, String fromDate, String toDate, String country, String toDistance) {
         Condition condition = VISIT.USER_ID.equal(userId);
         if (fromDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.greaterThan(new Timestamp(Long.valueOf(fromDate))));
+            condition = condition.and(VISIT.VISITED_AT.greaterThan(Integer.valueOf(fromDate)));
         }
         if (toDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.lessThan(new Timestamp(Long.valueOf(toDate))));
+            condition = condition.and(VISIT.VISITED_AT.lessThan(Integer.valueOf(toDate)));
         }
         if (country != null) {
             condition = condition.and(LOCATION.COUNTRY.equal(country));
@@ -122,7 +123,7 @@ public class VisitDao {
             visit.setId(record.getValue(VISIT.ID));
             visit.setLocationId(record.getValue(VISIT.LOCATION_ID));
             visit.setUserId(record.getValue(VISIT.USER_ID));
-            visit.setVisitedAt(record.getValue(VISIT.VISITED_AT));
+            visit.setVisitedAt(record.getValue(VISIT.VISITED_AT, Long.class));
             visit.setMark(record.getValue(VISIT.MARK));
             return visit;
         }
@@ -136,7 +137,7 @@ public class VisitDao {
         public UserVisit map(Record record) {
             UserVisit userVisit = new UserVisit();
             userVisit.setMark(record.getValue(VISIT.MARK));
-            userVisit.setVisitedAt(record.getValue(VISIT.VISITED_AT));
+            userVisit.setVisitedAt(record.getValue(VISIT.VISITED_AT, Long.class));
             userVisit.setPlace(record.getValue(LOCATION.PLACE));
             return userVisit;
         }

@@ -4,7 +4,6 @@
 package ru.highloadcup.generated.tables;
 
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +35,7 @@ import ru.highloadcup.generated.tables.records.VisitRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Visit extends TableImpl<VisitRecord> {
 
-    private static final long serialVersionUID = -1143380748;
+    private static final long serialVersionUID = -833370642;
 
     /**
      * The reference instance of <code>VISIT</code>
@@ -69,7 +68,7 @@ public class Visit extends TableImpl<VisitRecord> {
     /**
      * The column <code>VISIT.VISITED_AT</code>.
      */
-    public final TableField<VisitRecord, Timestamp> VISITED_AT = createField("VISITED_AT", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
+    public final TableField<VisitRecord, Integer> VISITED_AT = createField("VISITED_AT", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>VISIT.MARK</code>.

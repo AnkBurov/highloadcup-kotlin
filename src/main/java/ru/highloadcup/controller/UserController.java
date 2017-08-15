@@ -91,6 +91,7 @@ public class UserController {
 
     @ExceptionHandler(Exception.class)
     public void handleAllExceptions(Exception e, HttpServletResponse response) throws IOException {
+        e.printStackTrace();
         if (e instanceof MethodArgumentTypeMismatchException) {
             createResponse(HttpStatus.NOT_FOUND, response);
         }

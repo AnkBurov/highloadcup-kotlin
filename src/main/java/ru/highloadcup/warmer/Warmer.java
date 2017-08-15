@@ -7,11 +7,13 @@ import ru.highloadcup.api.User;
 import ru.highloadcup.api.Visit;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class Warmer {
 
     public void warmControllers() throws IOException, InterruptedException {
+        TimeUnit.SECONDS.sleep(5L);
         System.out.println("Warm-up started");
         RestTemplate restTemplate = new RestTemplate();
         for (int i = 0; i < 10; i++) {

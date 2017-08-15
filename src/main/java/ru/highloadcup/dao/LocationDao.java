@@ -15,7 +15,6 @@ import ru.highloadcup.generated.tables.records.LocationRecord;
 import javax.transaction.Transactional;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -91,10 +90,10 @@ public class LocationDao {
                                           String fromAge, String toAge, String gender) {
         Condition condition = VISIT.LOCATION_ID.equal(locationId);
         if (fromDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.greaterThan(new Timestamp(Long.valueOf(fromDate))));
+            condition = condition.and(VISIT.VISITED_AT.greaterThan(Integer.valueOf(fromDate)));
         }
         if (toDate != null) {
-            condition = condition.and(VISIT.VISITED_AT.lessThan(new Timestamp(Long.valueOf(toDate))));
+            condition = condition.and(VISIT.VISITED_AT.lessThan(Integer.valueOf(toDate)));
         }
         if (gender != null) {
             condition = condition.and(USER.GENDER.equal(User.Gender.valueOf(gender).name()));
@@ -103,11 +102,11 @@ public class LocationDao {
         Condition joinCondition = DSL.trueCondition();
         if (fromAge != null) {
             joinCondition = joinCondition.and(
-                    "SELECT (JULIANDAY('NOW') - (JULIANDAY(USER.BIRTH_DATE))) / 365.25 > " + fromAge);
+                    "SELECT (JULIANDAY('NOW') - (JULIANDAY(USER.BIRTH_DATE, 'unixepoch'))) / 365.25 > " + fromAge);
         }
         if (toAge != null) {
             joinCondition = joinCondition.and(
-                    "SELECT (JULIANDAY('NOW') - (JULIANDAY(USER.BIRTH_DATE))) / 365.25 < " + toAge);
+                    "SELECT (JULIANDAY('NOW') - (JULIANDAY(USER.BIRTH_DATE, 'unixepoch'))) / 365.25 < " + toAge);
         }
 
         return getAverageVisitMark(condition, joinCondition);

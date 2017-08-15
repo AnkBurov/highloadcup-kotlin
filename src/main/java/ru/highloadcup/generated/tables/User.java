@@ -4,7 +4,6 @@
 package ru.highloadcup.generated.tables;
 
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +34,7 @@ import ru.highloadcup.generated.tables.records.UserRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-    private static final long serialVersionUID = 1445069182;
+    private static final long serialVersionUID = 11522276;
 
     /**
      * The reference instance of <code>USER</code>
@@ -78,7 +77,7 @@ public class User extends TableImpl<UserRecord> {
     /**
      * The column <code>USER.BIRTH_DATE</code>.
      */
-    public final TableField<UserRecord, Timestamp> BIRTH_DATE = createField("BIRTH_DATE", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
+    public final TableField<UserRecord, Integer> BIRTH_DATE = createField("BIRTH_DATE", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>USER</code> table reference

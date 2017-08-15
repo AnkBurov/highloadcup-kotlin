@@ -56,7 +56,7 @@ public class UserIntegrationTest {
         user.setFirstName("first");
         user.setLastName("second");
         user.setGender(User.Gender.m);
-        user.setBirthDate(new Timestamp(new Date().getTime()));
+        user.setBirthDate(0L);
 
         ResponseEntity<EmptyJson> response = restTemplate.postForEntity(REST_PATH + NEW, user, EmptyJson.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());

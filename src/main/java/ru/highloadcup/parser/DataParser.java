@@ -2,6 +2,8 @@ package ru.highloadcup.parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.highloadcup.api.LocationsDto;
 import ru.highloadcup.api.UsersDto;
 import ru.highloadcup.api.VisitsDto;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Component
 public class DataParser {
 
     @Autowired

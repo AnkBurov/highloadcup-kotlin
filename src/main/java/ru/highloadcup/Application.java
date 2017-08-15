@@ -17,18 +17,17 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
-@SpringBootApplication(scanBasePackages = {"ru.highloadcup.controller", "ru.highloadcup.dao", "ru.highloadcup.warmer"})
+@SpringBootApplication(scanBasePackages = {"ru.highloadcup.controller", "ru.highloadcup.dao", "ru.highloadcup.warmer",
+        "ru.highloadcup.parser"})
 public class Application implements InitializingBean {
-
-    @Bean
-    public DataParser dataParser() {
-        return new DataParser();
-    }
 
     @Bean
     public DSLContext dsl(DataSource dataSource) {
         return new DefaultDSLContext(dataSource, SQLDialect.SQLITE);
     }
+
+    @Autowired
+    private DataParser dataParser;
 
     @Autowired
     private Warmer warmer;
@@ -47,7 +46,7 @@ public class Application implements InitializingBean {
         final String finalDataFile = dataFile;
         taskExecutor.execute(() -> {
             try {
-                dataParser().parse(Paths.get(finalDataFile));
+                dataParser.parse(Paths.get(finalDataFile));
             } catch (IOException e) {
                 e.printStackTrace();
             }

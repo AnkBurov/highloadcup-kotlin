@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
+import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.highloadcup.api.User;
@@ -32,7 +33,7 @@ public class UserDao {
                 .set(USER.FIRST_NAME, user.getFirstName())
                 .set(USER.LAST_NAME, user.getLastName())
                 .set(USER.GENDER, user.getGender().name())
-                .set(USER.BIRTH_DATE, user.getBirthDate())
+                .set(DSL.field("BIRTH_DATE", Long.class), user.getBirthDate())
                 .execute();
     }
 
@@ -46,7 +47,7 @@ public class UserDao {
                     .set(USER.FIRST_NAME, user.getFirstName())
                     .set(USER.LAST_NAME, user.getLastName())
                     .set(USER.GENDER, user.getGender().name())
-                    .set(USER.BIRTH_DATE, user.getBirthDate()));
+                    .set(DSL.field("BIRTH_DATE", Long.class), user.getBirthDate()));
         }
         dsl.batch(queries).execute();
     }
@@ -70,7 +71,7 @@ public class UserDao {
             userRecord.setGender(user.getGender().name());
         }
         if (user.getBirthDate() != null) {
-            userRecord.setBirthDate(user.getBirthDate());
+            userRecord.set(DSL.field("BIRTH_DATE", Long.class), user.getBirthDate());
         }
         return userRecord.store();
     }
@@ -98,7 +99,7 @@ public class UserDao {
             user.setFirstName(record.getValue(USER.FIRST_NAME));
             user.setLastName(record.getValue(USER.LAST_NAME));
             user.setGender(User.Gender.valueOf(record.getValue(USER.GENDER)));
-            user.setBirthDate(record.getValue(USER.BIRTH_DATE));
+            user.setBirthDate(record.getValue(USER.BIRTH_DATE, Long.class));
             return user;
         }
     }
