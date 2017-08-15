@@ -102,14 +102,12 @@ public class LocationDao {
 
         Condition joinCondition = DSL.trueCondition();
         if (fromAge != null) {
-            Long seconds = Long.valueOf(fromAge) * 31557600;
             joinCondition = joinCondition.and(
-                    "(SELECT strftime('%s','now') - strftime('%s',USER.BIRTH_DATE)) > " + seconds);
+                    "SELECT (JULIANDAY('NOW') - (JULIANDAY(USER.BIRTH_DATE))) / 365.25 > " + fromAge);
         }
         if (toAge != null) {
-            Long seconds = Long.valueOf(toAge) * 31557600;
             joinCondition = joinCondition.and(
-                    "(SELECT strftime('%s','now') - strftime('%s',USER.BIRTH_DATE)) < " + seconds);
+                    "SELECT (JULIANDAY('NOW') - (JULIANDAY(USER.BIRTH_DATE))) / 365.25 < " + toAge);
         }
 
         return getAverageVisitMark(condition, joinCondition);
