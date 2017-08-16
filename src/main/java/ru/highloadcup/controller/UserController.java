@@ -2,6 +2,7 @@ package ru.highloadcup.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,13 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.highloadcup.api.EmptyJson;
 import ru.highloadcup.api.User;
+import ru.highloadcup.api.UserEO;
 import ru.highloadcup.api.UserVisit;
 import ru.highloadcup.api.UserVisitsDto;
 import ru.highloadcup.api.UsersDto;
+import ru.highloadcup.check.CustomChecker;
 import ru.highloadcup.dao.UserDao;
 import ru.highloadcup.dao.VisitDao;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +45,9 @@ public class UserController {
     @Autowired
     private VisitDao visitDao;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    @Qualifier("userEOCustomChecker")
+    private CustomChecker<UserEO> customChecker;
 
     @RequestMapping(method = RequestMethod.GET)
     public UsersDto getUsers() {
@@ -51,13 +57,14 @@ public class UserController {
     }
 
     @RequestMapping(value = NEW, method = RequestMethod.POST)
-    public void createUser(@RequestBody User user, HttpServletResponse response) throws IOException {
+    public void createUser(@RequestBody @Valid User user, HttpServletResponse response) throws IOException {
         userDao.createUser(user);
         createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.POST)
-    public void updateUser(@PathVariable Integer id, @RequestBody User user, HttpServletResponse response) throws IOException {
+    public void updateUser(@PathVariable Integer id, @RequestBody @Valid UserEO user, HttpServletResponse response) throws IOException {
+        customChecker.checkFullyNull(user);
         int numberOfUpdatedRecords = userDao.updateUser(id, user);
         if (numberOfUpdatedRecords == 0) {
             createResponse(HttpStatus.NOT_FOUND, response);
@@ -91,7 +98,6 @@ public class UserController {
 
     @ExceptionHandler(Exception.class)
     public void handleAllExceptions(Exception e, HttpServletResponse response) throws IOException {
-        e.printStackTrace();
         if (e instanceof MethodArgumentTypeMismatchException) {
             createResponse(HttpStatus.NOT_FOUND, response);
         }

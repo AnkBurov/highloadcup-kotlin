@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.highloadcup.api.EmptyJson;
 import ru.highloadcup.api.Visit;
+import ru.highloadcup.api.VisitEO;
+import ru.highloadcup.check.CustomChecker;
 import ru.highloadcup.dao.VisitDao;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import java.io.IOException;
 
@@ -31,14 +34,18 @@ public class VisitController {
     @Autowired
     private VisitDao visitDao;
 
+    @Autowired
+    private CustomChecker<VisitEO> customChecker;
+
     @RequestMapping(value = NEW, method = RequestMethod.POST)
-    public void createVisit(@RequestBody Visit visit, HttpServletResponse response) throws IOException {
+    public void createVisit(@RequestBody @Valid Visit visit, HttpServletResponse response) throws IOException {
         visitDao.createVisit(visit);
         createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.POST)
-    public void updateVisit(@PathVariable Integer id, @RequestBody Visit visit, HttpServletResponse response) throws IOException {
+    public void updateVisit(@PathVariable Integer id, @RequestBody @Valid VisitEO visit, HttpServletResponse response) throws IOException {
+        customChecker.checkFullyNull(visit);
         int numberOfUpdatedRecords = visitDao.updateVisit(id, visit);
         if (numberOfUpdatedRecords == 0) {
             createResponse(HttpStatus.NOT_FOUND, response);

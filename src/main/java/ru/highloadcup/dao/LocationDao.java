@@ -9,6 +9,7 @@ import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.highloadcup.api.Location;
+import ru.highloadcup.api.LocationEO;
 import ru.highloadcup.api.User;
 import ru.highloadcup.generated.tables.records.LocationRecord;
 
@@ -55,7 +56,7 @@ public class LocationDao {
     }
 
     @Transactional
-    public int updateLocation(Integer locationId, Location location) {
+    public int updateLocation(Integer locationId, LocationEO location) {
         LocationRecord locationRecord = dsl.fetchOne(LOCATION, LOCATION.ID.equal(locationId));
         if (locationRecord == null) {
             return 0;

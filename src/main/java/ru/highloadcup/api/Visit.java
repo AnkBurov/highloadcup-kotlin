@@ -2,21 +2,33 @@ package ru.highloadcup.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 public class Visit implements Serializable {
 
+    @NotNull
     private Integer id;
 
+    @NotNull
     @JsonProperty("location")
     private Integer locationId;
 
+    @NotNull
     @JsonProperty("user")
     private Integer userId;
 
+    @NotNull
+    @Min(946684800L)
+    @Max(1420070400L)
     @JsonProperty("visited_at")
     private Long visitedAt;
 
+    @NotNull
+    @Min(0)
+    @Max(5)
     private Integer mark;
 
     public Integer getId() {

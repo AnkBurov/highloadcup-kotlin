@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.highloadcup.api.UserVisit;
 import ru.highloadcup.api.Visit;
+import ru.highloadcup.api.VisitEO;
 import ru.highloadcup.generated.tables.records.VisitRecord;
 
 import javax.transaction.Transactional;
@@ -54,7 +55,7 @@ public class VisitDao {
     }
 
     @Transactional
-    public int updateVisit(Integer visitId, Visit visit) {
+    public int updateVisit(Integer visitId, VisitEO visit) {
         VisitRecord visitRecord = dsl.fetchOne(VISIT, VISIT.ID.equal(visitId));
         if (visitRecord == null) {
             return 0;

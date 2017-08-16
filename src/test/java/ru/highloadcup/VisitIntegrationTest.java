@@ -41,7 +41,7 @@ public class VisitIntegrationTest {
         visit.setId(id);
         visit.setLocationId(locationId);
         visit.setUserId(userId);
-        visit.setVisitedAt(0L);
+        visit.setVisitedAt(946684900L);
         visit.setMark(5);
 
         ResponseEntity<EmptyJson> response = restTemplate.postForEntity(REST_PATH + NEW, visit, EmptyJson.class);

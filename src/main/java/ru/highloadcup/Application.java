@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication(scanBasePackages = {"ru.highloadcup.controller", "ru.highloadcup.dao", "ru.highloadcup.warmer",
-        "ru.highloadcup.parser"})
+        "ru.highloadcup.parser", "ru.highloadcup.check"})
 public class Application implements InitializingBean {
 
     @Bean

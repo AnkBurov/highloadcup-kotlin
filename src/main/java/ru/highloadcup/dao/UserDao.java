@@ -8,6 +8,7 @@ import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.highloadcup.api.User;
+import ru.highloadcup.api.UserEO;
 import ru.highloadcup.generated.tables.records.UserRecord;
 
 import javax.transaction.Transactional;
@@ -53,7 +54,7 @@ public class UserDao {
     }
 
     @Transactional
-    public int updateUser(Integer userId, User user) {
+    public int updateUser(Integer userId, UserEO user) {
         UserRecord userRecord = dsl.fetchOne(USER, USER.ID.equal(userId));
         if (userRecord == null) {
             return 0;

@@ -1,17 +1,26 @@
 package ru.highloadcup.api;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 public class Location implements Serializable {
 
+    @NotNull
     private Integer id;
 
+    @NotNull
     private String place;
 
+    @NotNull
+    @Size(max = 50)
     private String country;
 
+    @NotNull
+    @Size(max = 50)
     private String city;
 
+    @NotNull
     private Integer distance;
 
     public Integer getId() {

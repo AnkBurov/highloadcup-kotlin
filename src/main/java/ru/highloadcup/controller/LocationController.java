@@ -13,9 +13,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import ru.highloadcup.api.AverageVisitMarkDto;
 import ru.highloadcup.api.EmptyJson;
 import ru.highloadcup.api.Location;
+import ru.highloadcup.api.LocationEO;
+import ru.highloadcup.check.CustomChecker;
 import ru.highloadcup.dao.LocationDao;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -36,14 +39,18 @@ public class LocationController {
     @Autowired
     private LocationDao locationDao;
 
+    @Autowired
+    private CustomChecker<LocationEO> customChecker;
+
     @RequestMapping(value = NEW, method = RequestMethod.POST)
-    public void createLocation(@RequestBody Location location, HttpServletResponse response) throws IOException {
+    public void createLocation(@RequestBody @Valid Location location, HttpServletResponse response) throws IOException {
         locationDao.createLocation(location);
         createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.POST)
-    public void updateLocation(@PathVariable Integer id, @RequestBody Location location, HttpServletResponse response) throws IOException {
+    public void updateLocation(@PathVariable Integer id, @RequestBody @Valid LocationEO location, HttpServletResponse response) throws IOException {
+        customChecker.checkFullyNull(location);
         int numberOfUpdatedRecords = locationDao.updateLocation(id, location);
         if (numberOfUpdatedRecords == 0) {
             createResponse(HttpStatus.NOT_FOUND, response);
