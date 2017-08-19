@@ -29,6 +29,7 @@ public class HttpUtil {
         try (ServletOutputStream outputStream = response.getOutputStream()) {
             outputStream.write(EMPTY_BYTES);
             outputStream.flush();
+            outputStream.close();
         }
     }
 
@@ -41,6 +42,7 @@ public class HttpUtil {
         try (ServletOutputStream outputStream = response.getOutputStream()) {
             outputStream.write(bytes);
             outputStream.flush();
+            outputStream.close();
         }
     }
 }

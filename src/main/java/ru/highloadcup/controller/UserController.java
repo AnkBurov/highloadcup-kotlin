@@ -1,6 +1,5 @@
 package ru.highloadcup.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -22,6 +21,8 @@ import ru.highloadcup.check.CustomChecker;
 import ru.highloadcup.dao.UserDao;
 import ru.highloadcup.dao.VisitDao;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -57,47 +58,102 @@ public class UserController {
     }
 
     @RequestMapping(value = NEW, method = RequestMethod.POST)
-    public void createUser(@RequestBody @Valid User user, HttpServletResponse response) throws IOException {
-        userDao.createUser(user);
-        createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+    public void createUser(@RequestBody @Valid User user, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        AsyncContext asyncContext = request.startAsync();
+        asyncContext.start(() -> {
+            try {
+                userDao.createUser(user);
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+            } catch (Exception e) {
+                try {
+                    createResponse(HttpStatus.BAD_REQUEST, response);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            } finally {
+                asyncContext.complete();
+            }
+        });
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.POST)
-    public void updateUser(@PathVariable Integer id, @RequestBody @Valid UserEO user, HttpServletResponse response) throws IOException {
-        customChecker.checkFullyNull(user);
-        int numberOfUpdatedRecords = userDao.updateUser(id, user);
-        if (numberOfUpdatedRecords == 0) {
-            createResponse(HttpStatus.NOT_FOUND, response);
-        }
-        createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+    public void updateUser(@PathVariable Integer id, @RequestBody @Valid UserEO user, HttpServletRequest request,
+                           HttpServletResponse response) throws IOException {
+        AsyncContext asyncContext = request.startAsync();
+        asyncContext.start(() -> {
+            try {
+                customChecker.checkFullyNull(user);
+                int numberOfUpdatedRecords = userDao.updateUser(id, user);
+                if (numberOfUpdatedRecords == 0) {
+                    createResponse(HttpStatus.NOT_FOUND, response);
+                }
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+            } catch (Exception e) {
+                try {
+                    createResponse(HttpStatus.BAD_REQUEST, response);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            } finally {
+                asyncContext.complete();
+            }
+        });
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.GET)
-    public void getUser(@PathVariable Integer id, HttpServletResponse response) throws IOException {
-        User user = userDao.getUser(id);
-        if (user == null) {
-            createResponse(HttpStatus.NOT_FOUND, response);
-        }
-        createResponse(user, HttpStatus.OK, response);
+    public void getUser(@PathVariable Integer id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        AsyncContext asyncContext = request.startAsync();
+        asyncContext.start(() -> {
+            try {
+                User user = userDao.getUser(id);
+                if (user == null) {
+                    createResponse(HttpStatus.NOT_FOUND, response);
+                }
+                createResponse(user, HttpStatus.OK, response);
+            } catch (Exception e) {
+                try {
+                    createResponse(HttpStatus.BAD_REQUEST, response);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            } finally {
+                asyncContext.complete();
+            }
+        });
     }
 
     @RequestMapping(value = BY_ID + VisitController.REST_PATH, method = RequestMethod.GET)
     public void getUserVisits(@PathVariable Integer id,
+                              HttpServletRequest request,
                               HttpServletResponse response,
                               @RequestParam(required = false) String fromDate,
                               @RequestParam(required = false) String toDate,
                               @RequestParam(required = false) String country,
                               @RequestParam(required = false) String toDistance) throws IOException {
-        User user = userDao.getUser(id);
-        if (user == null) {
-            createResponse(HttpStatus.NOT_FOUND, response);
-        }
-        List<UserVisit> userVisits = visitDao.getUserVisits(id, fromDate, toDate, country, toDistance);
-        createResponse(new UserVisitsDto(userVisits), HttpStatus.OK, response);
+        AsyncContext asyncContext = request.startAsync();
+        asyncContext.start(() -> {
+            try {
+                User user = userDao.getUser(id);
+                if (user == null) {
+                    createResponse(HttpStatus.NOT_FOUND, response);
+                }
+                List<UserVisit> userVisits = visitDao.getUserVisits(id, fromDate, toDate, country, toDistance);
+                createResponse(new UserVisitsDto(userVisits), HttpStatus.OK, response);
+            } catch (Exception e) {
+                try {
+                    createResponse(HttpStatus.BAD_REQUEST, response);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            } finally {
+                asyncContext.complete();
+            }
+        });
     }
 
     @ExceptionHandler(Exception.class)
     public void handleAllExceptions(Exception e, HttpServletResponse response) throws IOException {
+//        e.printStackTrace();
         if (e instanceof MethodArgumentTypeMismatchException) {
             createResponse(HttpStatus.NOT_FOUND, response);
         }
