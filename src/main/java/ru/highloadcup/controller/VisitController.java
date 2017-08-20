@@ -16,6 +16,7 @@ import ru.highloadcup.check.CustomChecker;
 import ru.highloadcup.dao.VisitDao;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -41,15 +42,15 @@ public class VisitController {
     private CustomChecker<VisitEO> customChecker;
 
     @RequestMapping(value = NEW, method = RequestMethod.POST)
-    public void createVisit(@RequestBody @Valid Visit visit, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void createVisit(@RequestBody @Valid Visit visit, HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 visitDao.createVisit(visit);
-                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -61,19 +62,19 @@ public class VisitController {
 
     @RequestMapping(value = BY_ID, method = RequestMethod.POST)
     public void updateVisit(@PathVariable Integer id, @RequestBody @Valid VisitEO visit,
-                            HttpServletRequest request, HttpServletResponse response) throws IOException {
+                            HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 customChecker.checkFullyNull(visit);
                 int numberOfUpdatedRecords = visitDao.updateVisit(id, visit);
                 if (numberOfUpdatedRecords == 0) {
-                    createResponse(HttpStatus.NOT_FOUND, response);
+                    createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
-                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -84,18 +85,18 @@ public class VisitController {
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.GET)
-    public void getVisit(@PathVariable Integer id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void getVisit(@PathVariable Integer id, HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 Visit visit = visitDao.getVisit(id);
                 if (visit == null) {
-                    createResponse(HttpStatus.NOT_FOUND, response);
+                    createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
-                createResponse(visit, HttpStatus.OK, response);
+                createResponse(visit, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -107,7 +108,6 @@ public class VisitController {
 
     @ExceptionHandler(Exception.class)
     public void handleAllExceptions(Exception e, HttpServletResponse response) throws IOException {
-//        e.printStackTrace();
         if (e instanceof MethodArgumentTypeMismatchException) {
             createResponse(HttpStatus.NOT_FOUND, response);
         }

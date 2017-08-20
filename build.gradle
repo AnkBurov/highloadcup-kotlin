@@ -38,12 +38,8 @@ jooq {
 repositories {
     mavenCentral()
 }
-configurations {
-    compile.exclude module: "spring-boot-starter-tomcat"
-}
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-jetty:1.5.6.RELEASE")
     compile("org.springframework.boot:spring-boot-starter-web:1.5.6.RELEASE")
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '1.5.6.RELEASE'
 

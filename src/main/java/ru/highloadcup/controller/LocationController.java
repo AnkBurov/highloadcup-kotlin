@@ -46,15 +46,15 @@ public class LocationController {
     private CustomChecker<LocationEO> customChecker;
 
     @RequestMapping(value = NEW, method = RequestMethod.POST)
-    public void createLocation(@RequestBody @Valid Location location, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void createLocation(@RequestBody @Valid Location location, HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 locationDao.createLocation(location);
-                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -66,19 +66,19 @@ public class LocationController {
 
     @RequestMapping(value = BY_ID, method = RequestMethod.POST)
     public void updateLocation(@PathVariable Integer id, @RequestBody @Valid LocationEO location,
-                               HttpServletRequest request, HttpServletResponse response) throws IOException {
+                               HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 customChecker.checkFullyNull(location);
                 int numberOfUpdatedRecords = locationDao.updateLocation(id, location);
                 if (numberOfUpdatedRecords == 0) {
-                    createResponse(HttpStatus.NOT_FOUND, response);
+                    createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
-                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -89,18 +89,18 @@ public class LocationController {
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.GET)
-    public void getLocation(@PathVariable Integer id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void getLocation(@PathVariable Integer id, HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 Location location = locationDao.getLocation(id);
                 if (location == null) {
-                    createResponse(HttpStatus.NOT_FOUND, response);
+                    createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
-                createResponse(location, HttpStatus.OK, response);
+                createResponse(location, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -113,7 +113,6 @@ public class LocationController {
     @RequestMapping(value = BY_ID + AVG, method = RequestMethod.GET)
     public void getAverageVisitMark(@PathVariable Integer id,
                                     HttpServletRequest request,
-                                    HttpServletResponse response,
                                     @RequestParam(required = false) String fromDate,
                                     @RequestParam(required = false) String toDate,
                                     @RequestParam(required = false) String fromAge,
@@ -124,17 +123,17 @@ public class LocationController {
             try {
                 Location location = locationDao.getLocation(id);
                 if (location == null) {
-                    createResponse(HttpStatus.NOT_FOUND, response);
+                    createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
                 BigDecimal averageVisitMark = locationDao.getAverageVisitMark(id, fromDate, toDate, fromAge, toAge, gender);
                 if (averageVisitMark == null) {
                     averageVisitMark = BigDecimal.ZERO;
                 }
                 BigDecimal rounded = averageVisitMark.round(new MathContext(6, RoundingMode.HALF_EVEN));
-                createResponse(new AverageVisitMarkDto(rounded), HttpStatus.OK, response);
+                createResponse(new AverageVisitMarkDto(rounded), HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -146,7 +145,6 @@ public class LocationController {
 
     @ExceptionHandler(Exception.class)
     public void handleAllExceptions(Exception e, HttpServletResponse response) throws IOException {
-//        e.printStackTrace();
         if (e instanceof MethodArgumentTypeMismatchException) {
             createResponse(HttpStatus.NOT_FOUND, response);
         }

@@ -58,15 +58,15 @@ public class UserController {
     }
 
     @RequestMapping(value = NEW, method = RequestMethod.POST)
-    public void createUser(@RequestBody @Valid User user, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void createUser(@RequestBody @Valid User user, HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 userDao.createUser(user);
-                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -77,20 +77,19 @@ public class UserController {
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.POST)
-    public void updateUser(@PathVariable Integer id, @RequestBody @Valid UserEO user, HttpServletRequest request,
-                           HttpServletResponse response) throws IOException {
+    public void updateUser(@PathVariable Integer id, @RequestBody @Valid UserEO user, HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 customChecker.checkFullyNull(user);
                 int numberOfUpdatedRecords = userDao.updateUser(id, user);
                 if (numberOfUpdatedRecords == 0) {
-                    createResponse(HttpStatus.NOT_FOUND, response);
+                    createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
-                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, response);
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -101,18 +100,18 @@ public class UserController {
     }
 
     @RequestMapping(value = BY_ID, method = RequestMethod.GET)
-    public void getUser(@PathVariable Integer id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void getUser(@PathVariable Integer id, HttpServletRequest request) throws IOException {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.start(() -> {
             try {
                 User user = userDao.getUser(id);
                 if (user == null) {
-                    createResponse(HttpStatus.NOT_FOUND, response);
+                    createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
-                createResponse(user, HttpStatus.OK, response);
+                createResponse(user, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -125,7 +124,6 @@ public class UserController {
     @RequestMapping(value = BY_ID + VisitController.REST_PATH, method = RequestMethod.GET)
     public void getUserVisits(@PathVariable Integer id,
                               HttpServletRequest request,
-                              HttpServletResponse response,
                               @RequestParam(required = false) String fromDate,
                               @RequestParam(required = false) String toDate,
                               @RequestParam(required = false) String country,
@@ -135,13 +133,13 @@ public class UserController {
             try {
                 User user = userDao.getUser(id);
                 if (user == null) {
-                    createResponse(HttpStatus.NOT_FOUND, response);
+                    createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
                 List<UserVisit> userVisits = visitDao.getUserVisits(id, fromDate, toDate, country, toDistance);
-                createResponse(new UserVisitsDto(userVisits), HttpStatus.OK, response);
+                createResponse(new UserVisitsDto(userVisits), HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
-                    createResponse(HttpStatus.BAD_REQUEST, response);
+                    createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -153,7 +151,6 @@ public class UserController {
 
     @ExceptionHandler(Exception.class)
     public void handleAllExceptions(Exception e, HttpServletResponse response) throws IOException {
-//        e.printStackTrace();
         if (e instanceof MethodArgumentTypeMismatchException) {
             createResponse(HttpStatus.NOT_FOUND, response);
         }
