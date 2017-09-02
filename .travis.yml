@@ -11,4 +11,4 @@ cache:
     - $HOME/.gradle/wrapper/
 
 after_success:
-- ./gradle jacocoTestReport coveralls
+- ./gradlew jacocoTestReport coveralls

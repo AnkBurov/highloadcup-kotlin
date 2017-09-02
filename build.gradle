@@ -68,3 +68,7 @@ dependencies {
 
     jooqRuntime group: 'org.xerial', name: 'sqlite-jdbc', version: '3.20.0'
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.4'
+}
