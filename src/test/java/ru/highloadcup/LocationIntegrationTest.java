@@ -37,12 +37,7 @@ public class LocationIntegrationTest {
     }
 
     static Location createLocationInternal(TestRestTemplate restTemplate, Integer id) {
-        Location location = new Location();
-        location.setId(id);
-        location.setDistance(3);
-        location.setCity("London");
-        location.setCountry("England");
-        location.setPlace("Some garden");
+        Location location = new Location(id, "London", "England", "Some garden", 3);
 
         ResponseEntity<EmptyJson> response = restTemplate.postForEntity(REST_PATH + NEW, location, EmptyJson.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -59,20 +54,22 @@ public class LocationIntegrationTest {
     @Test
     public void updateLocation() throws Exception {
         Location location = createLocationInternal(restTemplate, 600001);
-        location.setCity("Liverpool");
-        updateLocationInternal(restTemplate, location);
+        Location copiedLocation = location.copy(location.getId(), location.getPlace(),
+                location.getCountry(), "Liverpool", location.getDistance());
+        updateLocationInternal(restTemplate, copiedLocation);
     }
 
     @Test
     public void getLocation() throws Exception {
         Location location = createLocationInternal(restTemplate, 600002);
-        location.setCity("Liverpool");
-        updateLocationInternal(restTemplate, location);
+        Location copiedLocation = location.copy(location.getId(),
+                location.getPlace(), location.getCountry(), "Liverpool", location.getDistance());
+        updateLocationInternal(restTemplate, copiedLocation);
 
-        ResponseEntity<Location> response = restTemplate.getForEntity(REST_PATH + BY_ID, Location.class, location.getId());
+        ResponseEntity<Location> response = restTemplate.getForEntity(REST_PATH + BY_ID, Location.class, copiedLocation.getId());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(location, response.getBody());
+        assertEquals(copiedLocation, response.getBody());
     }
 
     @Test

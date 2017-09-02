@@ -38,43 +38,48 @@ public class DataParser {
     @Autowired
     private VisitDao visitDao;
 
-    public void parse(Path path) throws IOException {
-        if (!Files.exists(path)) {
-            throw new IllegalArgumentException("Path " + path + "doesn't exist");
-        }
+    @Async("taskExecutor")
+    public void parse(Path path) {
+        try {
+            if (!Files.exists(path)) {
+                throw new IllegalArgumentException("Path " + path + "doesn't exist");
+            }
 
-        List<UsersDto> usersDtos = new ArrayList<>();
-        List<LocationsDto> locationsDtos = new ArrayList<>();
-        List<VisitsDto> visitsDtos = new ArrayList<>();
-        try (ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(path.toFile())))) {
-            ZipEntry nextEntry = null;
-            while ((nextEntry = zip.getNextEntry()) != null) {
-                System.out.println(nextEntry);
-                String fileName = nextEntry.getName();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(zip, Charset.forName("UTF-8")));
-                ObjectMapper mapper = new ObjectMapper();
-                if (fileName.contains("users")) {
-                    String json = bufferedReader.lines().collect(Collectors.joining());
-                    UsersDto usersDto = mapper.readValue(json, UsersDto.class);
-                    usersDtos.add(usersDto);
-                } else if (fileName.contains("locations")) {
-                    String json = bufferedReader.lines().collect(Collectors.joining());
-                    LocationsDto locationsDto = mapper.readValue(json, LocationsDto.class);
-                    locationsDtos.add(locationsDto);
-                } else if (fileName.contains("visits")) {
-                    String json = bufferedReader.lines().collect(Collectors.joining());
-                    VisitsDto visitsDto = mapper.readValue(json, VisitsDto.class);
-                    visitsDtos.add(visitsDto);
-                } else {
-                    System.err.println("Unsupported file " + fileName + " in archive");
+            List<UsersDto> usersDtos = new ArrayList<>();
+            List<LocationsDto> locationsDtos = new ArrayList<>();
+            List<VisitsDto> visitsDtos = new ArrayList<>();
+            try (ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(path.toFile())))) {
+                ZipEntry nextEntry = null;
+                while ((nextEntry = zip.getNextEntry()) != null) {
+                    System.out.println(nextEntry);
+                    String fileName = nextEntry.getName();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(zip, Charset.forName("UTF-8")));
+                    ObjectMapper mapper = new ObjectMapper();
+                    if (fileName.contains("users")) {
+                        String json = bufferedReader.lines().collect(Collectors.joining());
+                        UsersDto usersDto = mapper.readValue(json, UsersDto.class);
+                        usersDtos.add(usersDto);
+                    } else if (fileName.contains("locations")) {
+                        String json = bufferedReader.lines().collect(Collectors.joining());
+                        LocationsDto locationsDto = mapper.readValue(json, LocationsDto.class);
+                        locationsDtos.add(locationsDto);
+                    } else if (fileName.contains("visits")) {
+                        String json = bufferedReader.lines().collect(Collectors.joining());
+                        VisitsDto visitsDto = mapper.readValue(json, VisitsDto.class);
+                        visitsDtos.add(visitsDto);
+                    } else {
+                        System.err.println("Unsupported file " + fileName + " in archive");
+                    }
                 }
             }
-        }
 
-        //insert to database
-        usersDtos.parallelStream().forEach(usersDto -> userDao.createUsers(usersDto.getUsers()));
-        locationsDtos.parallelStream().forEach(locationsDto -> locationDao.createLocations(locationsDto.getLocations()));
-        visitsDtos.parallelStream().forEach(visitsDto -> visitDao.createVisits(visitsDto.getVisits()));
-        System.out.println("Entities uploaded");
+            //insert to database
+            usersDtos.parallelStream().forEach(usersDto -> userDao.createUsers(usersDto.getUsers()));
+            locationsDtos.parallelStream().forEach(locationsDto -> locationDao.createLocations(locationsDto.getLocations()));
+            visitsDtos.parallelStream().forEach(visitsDto -> visitDao.createVisits(visitsDto.getVisits()));
+            System.out.println("Entities uploaded");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

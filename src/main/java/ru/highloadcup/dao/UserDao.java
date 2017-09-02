@@ -26,6 +26,10 @@ public class UserDao {
     @Autowired
     private DSLContext dsl;
 
+    public UserDao(DSLContext dsl) {
+        this.dsl = dsl;
+    }
+
     @Transactional
     public int createUser(User user) {
         return dsl.insertInto(USER)

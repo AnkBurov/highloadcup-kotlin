@@ -126,13 +126,12 @@ public class LocationDao {
 
         @Override
         public Location map(Record record) {
-            Location location = new Location();
-            location.setId(record.getValue(LOCATION.ID));
-            location.setPlace(record.getValue(LOCATION.PLACE));
-            location.setCountry(record.getValue(LOCATION.COUNTRY));
-            location.setCity(record.getValue(LOCATION.CITY));
-            location.setDistance(record.getValue(LOCATION.DISTANCE));
-            return location;
+            Integer id = record.getValue(LOCATION.ID);
+            String place = record.getValue(LOCATION.PLACE);
+            String country = record.getValue(LOCATION.COUNTRY);
+            String city = record.getValue(LOCATION.CITY);
+            Integer distance = record.getValue(LOCATION.DISTANCE);
+            return new Location(id, place, country, city, distance);
         }
     }
 }

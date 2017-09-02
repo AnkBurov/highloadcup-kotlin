@@ -51,7 +51,7 @@ public class LocationController {
         asyncContext.start(() -> {
             try {
                 locationDao.createLocation(location);
-                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
+                createResponse(EmptyJson.Companion.getINSTANCE(), HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
                     createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
@@ -75,7 +75,7 @@ public class LocationController {
                 if (numberOfUpdatedRecords == 0) {
                     createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
-                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
+                createResponse(EmptyJson.Companion.getINSTANCE(), HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
                     createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
@@ -145,6 +145,7 @@ public class LocationController {
 
     @ExceptionHandler(Exception.class)
     public void handleAllExceptions(Exception e, HttpServletResponse response) throws IOException {
+        e.printStackTrace();
         if (e instanceof MethodArgumentTypeMismatchException) {
             createResponse(HttpStatus.NOT_FOUND, response);
         }
