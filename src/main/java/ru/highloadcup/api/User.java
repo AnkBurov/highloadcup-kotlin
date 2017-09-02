@@ -10,12 +10,6 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    //todo проверка в коде на длину символов
-    //todo read uncommitted
-    //todo не примитив
-    //todo настроить память для sqlite
-    //todo валидирвать email
-    //todo Во всех ответах от сервера учитываются заголовки Content-Type, Content-Length, Connection.
     @NotNull
     private Integer id;
 

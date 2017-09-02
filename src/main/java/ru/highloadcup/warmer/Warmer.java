@@ -16,7 +16,7 @@ public class Warmer {
         TimeUnit.SECONDS.sleep(5L);
         System.out.println("Warm-up started");
         RestTemplate restTemplate = new RestTemplate();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             restTemplate.getForEntity("http://localhost/locations/1", Location.class);
             restTemplate.getForEntity("http://localhost/users/1", User.class);
             restTemplate.getForEntity("http://localhost/visits/1", Visit.class);

@@ -24,23 +24,14 @@ public class HttpUtil {
     }
 
     public static void createResponse(HttpStatus httpStatus, HttpServletResponse response) throws IOException {
-        response.setContentLength(0);
         response.setStatus(httpStatus.value());
-        try (ServletOutputStream outputStream = response.getOutputStream()) {
-            outputStream.write(EMPTY_BYTES);
-            outputStream.flush();
-        }
+        response.getOutputStream().write(EMPTY_BYTES);
     }
 
     public static <T extends Serializable> void createResponse(T object, HttpStatus httpStatus, HttpServletResponse response) throws IOException {
-        byte[] bytes = MAPPER.writeValueAsBytes(object);
-        response.setContentLength(bytes.length);
         response.setCharacterEncoding(UTF8);
         response.setContentType(CONTENT_TYPE);
         response.setStatus(httpStatus.value());
-        try (ServletOutputStream outputStream = response.getOutputStream()) {
-            outputStream.write(bytes);
-            outputStream.flush();
-        }
+        response.getOutputStream().write(MAPPER.writeValueAsBytes(object));
     }
 }
