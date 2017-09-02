@@ -10,7 +10,8 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.8
 
-jooq {
+// not needed since generated files and project files are in the same repository
+/*jooq {
     db(sourceSets.main) {
         jdbc {
             driver = 'org.sqlite.JDBC'
@@ -33,7 +34,7 @@ jooq {
             }
         }
     }
-}
+}*/
 
 repositories {
     mavenCentral()
