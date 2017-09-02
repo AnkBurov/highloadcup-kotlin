@@ -28,15 +28,13 @@ class VisitDao {
     private lateinit var dsl: DSLContext
 
     @Transactional
-    fun createVisit(visit: Visit): Int {
-        return dsl.insertInto(VISIT)
-                .set(VISIT.ID, visit.id)
-                .set(VISIT.LOCATION_ID, visit.locationId)
-                .set(VISIT.USER_ID, visit.userId)
-                .set(DSL.field("VISITED_AT", Long::class.java), visit.visitedAt)
-                .set(VISIT.MARK, visit.mark)
-                .execute()
-    }
+    fun createVisit(visit: Visit) = dsl.insertInto(VISIT)
+            .set(VISIT.ID, visit.id)
+            .set(VISIT.LOCATION_ID, visit.locationId)
+            .set(VISIT.USER_ID, visit.userId)
+            .set(DSL.field("VISITED_AT", Long::class.java), visit.visitedAt)
+            .set(VISIT.MARK, visit.mark)
+            .execute()
 
     @Transactional
     fun createVisits(visits: Collection<Visit>) {
@@ -61,16 +59,14 @@ class VisitDao {
         return visitRecord.store()
     }
 
-    fun getVisit(visitId: Int): Visit {
-        return dsl.select(VISIT.ID,
-                VISIT.LOCATION_ID,
-                VISIT.USER_ID,
-                VISIT.VISITED_AT,
-                VISIT.MARK)
-                .from(VISIT)
-                .where(VISIT.ID.equal(visitId))
-                .fetchOne(VisitMapper)
-    }
+    fun getVisit(visitId: Int) = dsl.select(VISIT.ID,
+            VISIT.LOCATION_ID,
+            VISIT.USER_ID,
+            VISIT.VISITED_AT,
+            VISIT.MARK)
+            .from(VISIT)
+            .where(VISIT.ID.equal(visitId))
+            .fetchOne(VisitMapper)
 
     fun getUserVisits(userId: Int, fromDate: String?, toDate: String?, country: String?, toDistance: String?): List<UserVisit> {
         val conditions = arrayListOf<Condition>()
@@ -82,36 +78,34 @@ class VisitDao {
         return getUserVisits(conditions)
     }
 
-    private fun getUserVisits(conditions: Collection<Condition>): List<UserVisit> {
-        return dsl.select(VISIT.MARK,
-                VISIT.VISITED_AT,
-                LOCATION.PLACE)
-                .from(VISIT)
-                .join(LOCATION).on(VISIT.LOCATION_ID.equal(LOCATION.ID))
-                .where(conditions)
-                .orderBy(VISIT.VISITED_AT.asc())
-                .fetch(UserVisitMapper)
-    }
-}
+    private fun getUserVisits(conditions: Collection<Condition>) = dsl.select(VISIT.MARK,
+            VISIT.VISITED_AT,
+            LOCATION.PLACE)
+            .from(VISIT)
+            .join(LOCATION).on(VISIT.LOCATION_ID.equal(LOCATION.ID))
+            .where(conditions)
+            .orderBy(VISIT.VISITED_AT.asc())
+            .fetch(UserVisitMapper)
 
-private object VisitMapper: RecordMapper<Record, Visit> {
-    override fun map(record: Record): Visit {
-        val visit = Visit()
-        visit.id = record.getValue(VISIT.ID)
-        visit.locationId = record.getValue(VISIT.LOCATION_ID)
-        visit.userId = record.getValue(VISIT.USER_ID)
-        visit.visitedAt = record.getValue(VISIT.VISITED_AT, Long::class.java)
-        visit.mark = record.getValue(VISIT.MARK)
-        return visit
+    private object VisitMapper: RecordMapper<Record, Visit> {
+        override fun map(record: Record): Visit {
+            val visit = Visit()
+            visit.id = record.getValue(VISIT.ID)
+            visit.locationId = record.getValue(VISIT.LOCATION_ID)
+            visit.userId = record.getValue(VISIT.USER_ID)
+            visit.visitedAt = record.getValue(VISIT.VISITED_AT, Long::class.java)
+            visit.mark = record.getValue(VISIT.MARK)
+            return visit
+        }
     }
-}
 
-private object UserVisitMapper : RecordMapper<Record, UserVisit> {
-    override fun map(record: Record): UserVisit {
-        val userVisit = UserVisit()
-        userVisit.mark = record.getValue(VISIT.MARK)
-        userVisit.visitedAt = record.getValue(VISIT.VISITED_AT, Long::class.java)
-        userVisit.place = record.getValue(LOCATION.PLACE)
-        return userVisit
+    private object UserVisitMapper : RecordMapper<Record, UserVisit> {
+        override fun map(record: Record): UserVisit {
+            val userVisit = UserVisit()
+            userVisit.mark = record.getValue(VISIT.MARK)
+            userVisit.visitedAt = record.getValue(VISIT.VISITED_AT, Long::class.java)
+            userVisit.place = record.getValue(LOCATION.PLACE)
+            return userVisit
+        }
     }
 }

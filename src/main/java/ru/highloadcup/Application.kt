@@ -18,9 +18,10 @@ import ru.highloadcup.warmer.Warmer
 import javax.sql.DataSource
 import java.nio.file.Paths
 
+@AllOpen
 @EnableAsync
 @SpringBootApplication(scanBasePackages = arrayOf("ru.highloadcup.controller", "ru.highloadcup.dao", "ru.highloadcup.warmer", "ru.highloadcup.parser", "ru.highloadcup.check"))
-open class Application(
+class Application(
         @Lazy
         @Autowired
         val dataParser: DataParser,
@@ -31,10 +32,10 @@ open class Application(
 ) : SpringBootServletInitializer(), InitializingBean {
 
     @Bean
-    open fun dsl(dataSource: DataSource) = DefaultDSLContext(dataSource, SQLDialect.SQLITE)
+    fun dsl(dataSource: DataSource) = DefaultDSLContext(dataSource, SQLDialect.SQLITE)
 
     @Bean
-    open fun taskExecutor() = SimpleAsyncTaskExecutor()
+    fun taskExecutor() = SimpleAsyncTaskExecutor()
 
     override fun configure(builder: SpringApplicationBuilder) = builder.sources(Application::class.java)
 
