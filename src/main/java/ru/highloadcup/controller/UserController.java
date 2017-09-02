@@ -63,7 +63,7 @@ public class UserController {
         asyncContext.start(() -> {
             try {
                 userDao.createUser(user);
-                createResponse(EmptyJson.Companion.getINSTANCE(), HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
                     createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
@@ -86,7 +86,7 @@ public class UserController {
                 if (numberOfUpdatedRecords == 0) {
                     createResponse(HttpStatus.NOT_FOUND, (HttpServletResponse) asyncContext.getResponse());
                 }
-                createResponse(EmptyJson.Companion.getINSTANCE(), HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
+                createResponse(EmptyJson.INSTANCE, HttpStatus.OK, (HttpServletResponse) asyncContext.getResponse());
             } catch (Exception e) {
                 try {
                     createResponse(HttpStatus.BAD_REQUEST, (HttpServletResponse) asyncContext.getResponse());
