@@ -1,6 +1,7 @@
 package ru.highloadcup.dao;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.AsyncContext;
@@ -16,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @RestController
+@RequestMapping("/hello")
 public class DefaultController {
 
     @GetMapping

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -20,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication(scanBasePackages = {"ru.highloadcup.controller", "ru.highloadcup.dao", "ru.highloadcup.warmer",
         "ru.highloadcup.parser", "ru.highloadcup.check"})
-public class Application implements InitializingBean {
+public class Application extends SpringBootServletInitializer implements InitializingBean {
 
     @Bean
     public DSLContext dsl(DataSource dataSource) {
@@ -35,6 +37,11 @@ public class Application implements InitializingBean {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(Application.class);
     }
 
     @Override
