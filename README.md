@@ -1,3 +1,3 @@
 # Highloadcup #
 
-Highloadcup from mail.ru
+Highloadcup competition by mail.ru
