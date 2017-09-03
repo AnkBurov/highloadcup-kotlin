@@ -18,9 +18,9 @@ class LocationEO @JsonCreator constructor(props: Map<String, Any?>) {
 
     init {
         props.values.forEach { if (it == null) throw IllegalArgumentException() }
-        this.place = props["place"] as String
-        this.country = props["country"] as String
-        this.city = props["city"] as String
-        this.distance = props["distance"] as Int
+        this.place = props["place"] as String?
+        this.country = props["country"] as String?
+        this.city = props["city"] as String?
+        this.distance = props["distance"] as Int?
     }
 }

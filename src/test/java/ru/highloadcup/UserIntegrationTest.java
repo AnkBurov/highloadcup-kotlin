@@ -7,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 import ru.highloadcup.api.EmptyJson;
 import ru.highloadcup.api.Location;
 import ru.highloadcup.api.User;
@@ -17,6 +19,7 @@ import ru.highloadcup.api.VisitsDto;
 import ru.highloadcup.controller.VisitController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -33,28 +36,13 @@ public class UserIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void getUsers() throws Exception {
-        ResponseEntity<UsersDto> response = restTemplate.getForEntity(REST_PATH, UsersDto.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        UsersDto usersDto = response.getBody();
-        assertNotNull(usersDto);
-        assertNotNull(usersDto.getUsers());
-        assertEquals(1, usersDto.getUsers().size());
-    }
-
-    @Test
     public void createUser() throws Exception {
+        List<HttpMessageConverter<?>> messageConverters = restTemplate.getRestTemplate().getMessageConverters();
         createUserInternal(restTemplate, 700000, "123@gmail.com");
     }
 
     static User createUserInternal(TestRestTemplate restTemplate, Integer id, String email) {
-        User user = new User();
-        user.setId(id);
-        user.setEmail(email);
-        user.setFirstName("first");
-        user.setLastName("second");
-        user.setGender(User.Gender.m);
-        user.setBirthDate(0L);
+        User user = new User(id, email, "first", "second", User.Gender.m, 0L);
 
         ResponseEntity<EmptyJson> response = restTemplate.postForEntity(REST_PATH + NEW, user, EmptyJson.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());

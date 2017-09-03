@@ -13,9 +13,6 @@ import ru.highloadcup.api.Location;
 import ru.highloadcup.api.User;
 import ru.highloadcup.api.Visit;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static ru.highloadcup.controller.VisitController.REST_PATH;
@@ -37,12 +34,7 @@ public class VisitIntegrationTest {
     }
 
     static Visit createVisitInternal(TestRestTemplate restTemplate, Integer id, Integer locationId, Integer userId) {
-        Visit visit = new Visit();
-        visit.setId(id);
-        visit.setLocationId(locationId);
-        visit.setUserId(userId);
-        visit.setVisitedAt(946684900L);
-        visit.setMark(5);
+        Visit visit = new Visit(id, locationId, userId, 946684900L, 5);
 
         ResponseEntity<EmptyJson> response = restTemplate.postForEntity(REST_PATH + NEW, visit, EmptyJson.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());

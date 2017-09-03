@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
-import ru.highloadcup.AllOpen
 import ru.highloadcup.api.*
 import ru.highloadcup.check.CustomChecker
 import ru.highloadcup.controller.UserController.Companion.REST_PATH
@@ -40,9 +39,6 @@ class UserController {
     @Autowired
     @Qualifier("userEOCustomChecker")
     private lateinit var customChecker: CustomChecker<UserEO>
-
-    @RequestMapping(method = arrayOf(RequestMethod.GET))
-    fun getUsers() = UsersDto(listOf(User()))
 
     @RequestMapping(value = NEW, method = arrayOf(RequestMethod.POST))
     fun createUser(@RequestBody @Valid user: User, request: HttpServletRequest) {

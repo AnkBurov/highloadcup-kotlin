@@ -29,8 +29,8 @@ class UserDao {
     fun createUser(user: User) = dsl.insertInto(USER)
             .set(USER.ID, user.id)
             .set(USER.EMAIL, user.email)
-            .set(USER.FIRST_NAME, user.firstName)
-            .set(USER.LAST_NAME, user.lastName)
+            .set(USER.FIRST_NAME, user.first_name)
+            .set(USER.LAST_NAME, user.last_name)
             .set(USER.GENDER, user.gender.name)
             .set(DSL.field("BIRTH_DATE", Long::class.java), user.birthDate)
             .execute()
@@ -40,8 +40,8 @@ class UserDao {
         val queries = users.mapTo(ArrayList<Query>()) { dsl.insertInto(USER)
                     .set(USER.ID, it.id)
                     .set(USER.EMAIL, it.email)
-                    .set(USER.FIRST_NAME, it.firstName)
-                    .set(USER.LAST_NAME, it.lastName)
+                    .set(USER.FIRST_NAME, it.first_name)
+                    .set(USER.LAST_NAME, it.last_name)
                     .set(USER.GENDER, it.gender.name)
                     .set(DSL.field("BIRTH_DATE", Long::class.java), it.birthDate)
         }
@@ -53,7 +53,7 @@ class UserDao {
         val userRecord = dsl.fetchOne(USER, USER.ID.equal(userId)) ?: return 0
         user.email?.let { userRecord.email = it }
         user.firstName?.let { userRecord.firstName = it }
-        user.lastName.let { userRecord.lastName = it }
+        user.lastName?.let { userRecord.lastName = it }
         user.gender?.let { userRecord.gender = it.name }
         user.birthDate?.let { userRecord.set(DSL.field("BIRTH_DATE", Long::class.java), it) }
         return userRecord.store()
@@ -71,14 +71,12 @@ class UserDao {
 
     private object UserMapper : RecordMapper<Record, User> {
         override fun map(record: Record): User {
-            val user = User()
-            user.id = record.getValue(USER.ID)
-            user.email = record.getValue(USER.EMAIL)
-            user.firstName = record.getValue(USER.FIRST_NAME)
-            user.lastName = record.getValue(USER.LAST_NAME)
-            user.gender = User.Gender.valueOf(record.getValue(USER.GENDER))
-            user.birthDate = record.getValue(USER.BIRTH_DATE, Long::class.java)
-            return user
+            return User(id = record.getValue(USER.ID),
+                    email = record.getValue(USER.EMAIL),
+                    first_name = record.getValue(USER.FIRST_NAME),
+                    last_name = record.getValue(USER.LAST_NAME),
+                    gender = User.Gender.valueOf(record.getValue(USER.GENDER)),
+                    birthDate = record.getValue(USER.BIRTH_DATE, Long::class.java))
         }
     }
 }
