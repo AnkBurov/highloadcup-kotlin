@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
@@ -28,10 +27,15 @@ public class HttpUtil {
         response.getOutputStream().write(EMPTY_BYTES);
     }
 
-    public static <T extends Serializable> void createResponse(T object, HttpStatus httpStatus, HttpServletResponse response) throws IOException {
+    public static <T extends Serializable> void createResponse(T object, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(UTF8);
         response.setContentType(CONTENT_TYPE);
-        response.setStatus(httpStatus.value());
-        response.getOutputStream().write(MAPPER.writeValueAsBytes(object));
+        if (object == null) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            response.getOutputStream().write(EMPTY_BYTES);
+        } else {
+            response.setStatus(HttpStatus.OK.value());
+            response.getOutputStream().write(MAPPER.writeValueAsBytes(object));
+        }
     }
 }

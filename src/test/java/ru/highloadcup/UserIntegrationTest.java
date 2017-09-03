@@ -16,8 +16,6 @@ import ru.highloadcup.api.Visit;
 import ru.highloadcup.api.VisitsDto;
 import ru.highloadcup.controller.VisitController;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
