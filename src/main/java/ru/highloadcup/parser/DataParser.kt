@@ -3,7 +3,6 @@ package ru.highloadcup.parser
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import ru.highloadcup.AllOpen
 import ru.highloadcup.api.LocationsDto
@@ -28,7 +27,6 @@ class DataParser(private @Autowired val userDao: UserDao,
 
     private val mapper = ObjectMapper().registerKotlinModule()
 
-    @Async("taskExecutor")
     fun parse(path: Path) {
         if (!Files.exists(path)) throw IllegalArgumentException("Path $path doesn't exist")
 
@@ -38,8 +36,7 @@ class DataParser(private @Autowired val userDao: UserDao,
 
         FileInputStream(path.toFile()).buffered().zipStream().use { zip ->
             while (true) {
-                val nextEntry: ZipEntry? = zip.nextEntry
-                if (nextEntry == null) break
+                val nextEntry: ZipEntry = zip.nextEntry ?: break
                 println(nextEntry)
                 val fileName = nextEntry.name
 
