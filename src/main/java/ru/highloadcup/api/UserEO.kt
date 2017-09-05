@@ -1,7 +1,6 @@
 package ru.highloadcup.api
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
@@ -35,7 +34,7 @@ class UserEO @JsonCreator constructor(props: Map<String, Any?>) {
         if (gender != null) {
             this.gender = User.Gender.valueOf(gender)
         }
-        val birth_date = props["birth_date"] as String?
+        val birth_date = props["birth_date"]
         if (birth_date != null) {
             this.birthDate = java.lang.Long.valueOf(birth_date.toString())
         }

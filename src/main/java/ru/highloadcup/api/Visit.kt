@@ -7,22 +7,20 @@ import javax.validation.constraints.Min
 import java.io.Serializable
 
 data class Visit(
-        @JsonProperty("id")
         val id: Int,
 
         @JsonProperty("location")
-        val location: Int,
+        val locationId: Int,
 
         @JsonProperty("user")
-        val user: Int,
+        val userId: Int,
 
         @Min(946684800L)
         @Max(1420070400L)
         @JsonProperty("visited_at")
-        val visited_at: Long,
+        val visitedAt: Long,
 
         @Min(0)
         @Max(5)
-        @JsonProperty("mark")
         var mark: Int
 ) : Serializable

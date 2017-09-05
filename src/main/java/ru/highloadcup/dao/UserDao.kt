@@ -29,8 +29,8 @@ class UserDao {
     fun createUser(user: User) = dsl.insertInto(USER)
             .set(USER.ID, user.id)
             .set(USER.EMAIL, user.email)
-            .set(USER.FIRST_NAME, user.first_name)
-            .set(USER.LAST_NAME, user.last_name)
+            .set(USER.FIRST_NAME, user.firstName)
+            .set(USER.LAST_NAME, user.lastName)
             .set(USER.GENDER, user.gender.name)
             .set(DSL.field("BIRTH_DATE", Long::class.java), user.birthDate)
             .execute()
@@ -40,8 +40,8 @@ class UserDao {
         val queries = users.mapTo(ArrayList<Query>()) { dsl.insertInto(USER)
                     .set(USER.ID, it.id)
                     .set(USER.EMAIL, it.email)
-                    .set(USER.FIRST_NAME, it.first_name)
-                    .set(USER.LAST_NAME, it.last_name)
+                    .set(USER.FIRST_NAME, it.firstName)
+                    .set(USER.LAST_NAME, it.lastName)
                     .set(USER.GENDER, it.gender.name)
                     .set(DSL.field("BIRTH_DATE", Long::class.java), it.birthDate)
         }
@@ -73,8 +73,8 @@ class UserDao {
         override fun map(record: Record): User {
             return User(id = record.getValue(USER.ID),
                     email = record.getValue(USER.EMAIL),
-                    first_name = record.getValue(USER.FIRST_NAME),
-                    last_name = record.getValue(USER.LAST_NAME),
+                    firstName = record.getValue(USER.FIRST_NAME),
+                    lastName = record.getValue(USER.LAST_NAME),
                     gender = User.Gender.valueOf(record.getValue(USER.GENDER)),
                     birthDate = record.getValue(USER.BIRTH_DATE, Long::class.java))
         }

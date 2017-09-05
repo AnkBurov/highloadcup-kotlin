@@ -16,7 +16,7 @@ public class HttpUtil {
     private static final String CONTENT_TYPE = "application/json;charset=" + UTF8;
     private static final byte[] EMPTY_BYTES = new byte[0];
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
 
     static {
         MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);

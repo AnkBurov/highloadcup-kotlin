@@ -8,9 +8,9 @@ import ru.highloadcup.api.VisitEO
 @Component
 class VisitEOCustomChecker : CustomChecker<VisitEO> {
     override fun checkFullyNull(checkingObject: VisitEO) {
-        if (checkingObject.location == null
-                && checkingObject.user == null
-                && checkingObject.visited_at == null
+        if (checkingObject.locationId == null
+                && checkingObject.userId == null
+                && checkingObject.visitedAt == null
                 && checkingObject.mark == null) {
             throw IllegalArgumentException("checkingObject is fully null")
         }

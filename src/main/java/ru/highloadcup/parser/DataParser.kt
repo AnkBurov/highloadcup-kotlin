@@ -1,6 +1,7 @@
 package ru.highloadcup.parser
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -25,7 +26,7 @@ class DataParser(private @Autowired val userDao: UserDao,
                       private @Autowired val locationDao: LocationDao,
                       private @Autowired val visitDao: VisitDao) {
 
-    private val mapper = ObjectMapper()
+    private val mapper = ObjectMapper().registerKotlinModule()
 
     @Async("taskExecutor")
     fun parse(path: Path) {
