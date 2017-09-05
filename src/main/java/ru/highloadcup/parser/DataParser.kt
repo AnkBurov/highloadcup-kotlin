@@ -15,7 +15,6 @@ import java.io.*
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.stream.Collectors
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -58,7 +57,7 @@ class DataParser(private @Autowired val userDao: UserDao,
     }
 
     private inline fun <reified T : Serializable> BufferedReader.readJsonDtos(mapper: ObjectMapper): T {
-        val json = this.lines().collect(Collectors.joining())
+        val json = this.readText()
         return mapper.readValue(json, T::class.java)
     }
 
