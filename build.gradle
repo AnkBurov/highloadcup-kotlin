@@ -87,6 +87,15 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jetty:1.5.6.RELEASE")
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.0"
 
+    compile fileTree(dir: 'lib', include: ['*.jar'])
+    compile group: 'commons-digester', name: 'commons-digester', version: '2.1'
+
+//    compile group: 'net.sf.jasperreports', name: 'jasperreports', version: '6.4.0'
+//    compile group: 'com.lowagie', name: 'itext', version: '4.2.2', ext: 'pom'
+//    compile group: 'org.olap4j', name: 'olap4j', version: '1.2.0'
+
+
+
     compile group: 'org.jooq', name: 'jooq', version: '3.9.5'
     compile group: 'org.jooq', name: 'jooq-meta', version: '3.9.5'
     compile group: 'org.jooq', name: 'jooq-codegen', version: '3.9.5'
